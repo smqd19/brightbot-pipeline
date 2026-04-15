@@ -1,6 +1,6 @@
 """Per-session token usage tracking and budget enforcement."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass

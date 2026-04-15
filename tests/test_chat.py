@@ -87,6 +87,8 @@ def test_chat_openai_failure(client, mock_openai):
     resp = client.post("/chat", json={"message": "Hi"})
     assert resp.status_code == 502
     assert "OpenAI API error" in resp.get_json()["error"]
+    # Error message should NOT leak exception details to the client
+    assert "API down" not in resp.get_json()["error"]
 
 
 def test_chat_token_limit_exceeded(client, app):

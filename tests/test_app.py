@@ -257,11 +257,12 @@ class TestOpenAIErrorHandling:
         resp = client.post("/chat", json={"message": "Hi"})
         assert resp.status_code == 502
 
-    def test_502_body_contains_error_detail(self, client, openai):
+    def test_502_body_contains_generic_error(self, client, openai):
         openai.chat.completions.create.side_effect = Exception("rate limit exceeded")
         data = client.post("/chat", json={"message": "Hi"}).get_json()
         assert "OpenAI API error" in data["error"]
-        assert "rate limit exceeded" in data["error"]
+        # Must NOT leak internal exception details to the client
+        assert "rate limit exceeded" not in data["error"]
 
     def test_openai_error_does_not_persist_messages(self, client, app, openai):
         """If OpenAI fails, the user message should NOT be saved to history."""

@@ -1,7 +1,11 @@
 """Flask application factory and route definitions."""
 
+import logging
+
 from flask import Flask, request, jsonify
 from openai import OpenAI
+
+logger = logging.getLogger(__name__)
 
 from src.session_store import SessionStore
 from src.cost_tracker import CostTracker
@@ -66,7 +70,7 @@ def _register_routes(app: Flask) -> None:
             return jsonify({"error": "Request body must be valid JSON."}), 400
 
         message = data.get("message")
-        if not message or not str(message).strip():
+        if message is None or not str(message).strip():
             return jsonify({"error": "message is required."}), 400
 
         message = str(message).strip()
@@ -102,7 +106,8 @@ def _register_routes(app: Flask) -> None:
             )
             assistant_content = completion.choices[0].message.content or ""
         except Exception as e:
-            return jsonify({"error": f"OpenAI API error: {str(e)}"}), 502
+            logger.exception("OpenAI API call failed for session %s", session_id)
+            return jsonify({"error": "OpenAI API error. Please try again later."}), 502
 
         # Record token usage
         usage_dict = {
