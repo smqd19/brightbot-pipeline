@@ -27,9 +27,8 @@ def create_app(config_override: dict | None = None) -> Flask:
         api_key = config_override.get("OPENAI_API_KEY", "test-key")
         model = config_override.get("OPENAI_MODEL", "gpt-4o-mini")
         system_prompt = config_override.get(
-            "BRIGHTBOT_SYSTEM_PROMPT",
-            "You are BrightBot, an assistant for the Brightly team. "
-            "Help with migration tools, Superset dashboards, and internal processes.",
+            "SYSTEM_PROMPT",
+            "You are BrightBot, a helpful assistant for the Brightly team.",
         )
         max_history = config_override.get("MAX_HISTORY", 50)
         max_session_tokens = config_override.get("MAX_SESSION_TOKENS", 100_000)
@@ -126,6 +125,11 @@ def _register_routes(app: Flask) -> None:
             "session_id": session_id,
             "usage": usage_dict,
         }), 200
+
+    @app.route("/config", methods=["GET"])
+    def config():
+        """Return non-secret configuration values."""
+        return jsonify({"system_prompt": app.config["SYSTEM_PROMPT"]}), 200
 
     @app.route("/health", methods=["GET"])
     def health():

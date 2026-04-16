@@ -15,9 +15,8 @@ OPENAI_API_KEY: str = _require_env("OPENAI_API_KEY")
 OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 SYSTEM_PROMPT: str = os.getenv(
-    "BRIGHTBOT_SYSTEM_PROMPT",
-    "You are BrightBot, an assistant for the Brightly team. "
-    "Help with migration tools, Superset dashboards, and internal processes.",
+    "SYSTEM_PROMPT",
+    "You are BrightBot, a helpful assistant for the Brightly team.",
 )
 
 MAX_HISTORY: int = int(os.getenv("MAX_HISTORY", "50"))
